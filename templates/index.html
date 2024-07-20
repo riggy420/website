@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block head %}
+        <title>LDR is gay</title>
+{% endblock head %}
+
+{% block body %}
+
+<!-- <form method="post" action="http://localhost:5000/result"> -->
+<!-- <form method="post" > -->
+
+{% if error%}
+<p><strong>{{error}}</strong></p>
+{% endif%}
+
+<form method="post" action="http://localhost:5000/result">
+<label for="Region">Region:</label>
+<input type="text" id="region" name="region" placeholder="region">
+<label for="ID">ID:</label>
+<input type="text" id="ID" name="ID" placeholder="ID">
+
+<label for="Price">Price:</label>
+<input type="text" id="Price" name="Price" placeholder="Price">
+
+<label for="W_sell_diff">W_sell_diff:</label>
+<input type="text" id="W_sell_diff" name="W_sell_diff" placeholder="W_sell_diff">
+
+<button type="submit" name="btn" value="Fall_to_20">Fall_to_20</button>
+<button type="submit" name="btn" value="Rise_to_40">Rise_to_40</button>
+<button type="submit" name="btn" value="Reflective_Price">Reflective Price</button>
+<button type="submit" name="btn" value="Price_when_ten_plus_current">Price_when_ten_plus_current</button>
+
+
+<p> Welcome </p>
+{% endblock body %}
+ 

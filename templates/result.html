@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+        <title>LDR is gay</title>
+{% endblock head %}
+
+{% block body %}
+
+<h1> Here is the search_result for :</h1>
+
+
+{% for key, value in context.items() %}
+    <h1>{{key}} : {{value}}</h1>
+
+
+{% endfor %}
+
+<!-- 
+{%for i in range(0, len)%} 
+  
+    <li>{{context[i]}}</li> 
+{%endfor%}  -->
+
+
+{% endblock body %}
+ 
