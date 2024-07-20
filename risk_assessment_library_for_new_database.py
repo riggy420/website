@@ -1486,7 +1486,7 @@ class using_risk_assessment():
 
         except FileNotFoundError:
             print("Wrong code")
-            pass 
+            return FileNotFoundError
 
         # # a= risk_assessment("300002","SZ")
         risk_assessment.split_string(a)
