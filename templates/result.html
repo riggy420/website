@@ -2,6 +2,7 @@
 
 {% block head %}
         <title>LDR is gay</title>
+        <!-- <script type = "text/javascript" src = "{{ url_for('static', filename = 'result.js') }}" ></script>  -->
 {% endblock head %}
 
 {% block body %}
@@ -15,6 +16,10 @@
 
 {% endfor %}
 
+
+<form method="post" action="http://localhost:5000">
+<button type="submit" name="btn" value="return">Return</button>
+</form>
 <!-- 
 {%for i in range(0, len)%} 
   

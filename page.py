@@ -27,13 +27,14 @@ def result():
         ID = request.form.get("ID")
         a = ra()
         print("Next")
+        if ra.what_is_price_when_w_is_fallen_to_20(a,ID,region) == FileNotFoundError:
+            flash ("Either StockID or region is wrong")
+            return redirect(request.url)
 
         if request.form['btn'] == 'Fall_to_20': 
             print("Here I am")
             # return "<p>" + str(ra.what_is_price_when_w_is_fallen_to_20(a,ID,region)) + "</p>"
-            if ra.what_is_price_when_w_is_fallen_to_20(a,ID,region) == FileNotFoundError:
-                flash ("Code not found")
-                return redirect(request.url)
+
             context = {
                 "function":"Fall_to_20",
                 "region":region,
