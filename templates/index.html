@@ -2,12 +2,15 @@
 
 {% block head %}
         <title>LDR is gay</title>
+
+<link rel="stylesheet"  type="text/css" href="{{url_for('.static', filename='index.css')}}">
+
+
 {% endblock head %}
 
 {% block body %}
 
-<!-- <form method="post" action="http://localhost:5000/result"> -->
-<!-- <form method="post" > -->
+
 
 {% if error%}
 <p><strong>{{error}}</strong></p>
@@ -35,12 +38,12 @@
 <input type="text" id="W_sell_diff" name="W_sell_diff" placeholder="W_sell_diff">
 
 <br>
-
+<div name="button-container">
 <button type="submit" name="btn" value="Fall_to_20">Fall_to_20</button>
 <button type="submit" name="btn" value="Rise_to_40">Rise_to_40</button>
 <button type="submit" name="btn" value="Reflective_Price">Given Price predict W_sell_diff</button>
 <button type="submit" name="btn" value="Price_when_ten_plus_current">Price_when_input_value_plus_current</button>
-
+</div>
 
 <p> Welcome </p>
 {% endblock body %}
