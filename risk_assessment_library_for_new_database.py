@@ -1681,11 +1681,11 @@ class using_risk_assessment():
                 # print("rsi_list"+str(rsi_list[-1]))
                 W_moderate_trying,W_sell_trying = risk_assessment.prediciting_W_moderate(a,mfi_list,rsi_list,d_list)
                 percentage-=0.001
-            else:
-                longstring2 = f"When W rise plus 10 {W_sell_trying}" 
-                print( longstring2)
-                print("Why2")
-                return str(longstring+longstring2)
+        else:
+            longstring2 = f"When W rise plus 10 {W_sell_trying}" 
+            print( longstring2)
+            print("Why2")
+            return str(longstring),str(longstring2)
 
     def reflective_price(self,id,place,price):
         # id = input("Which ID")
@@ -2386,11 +2386,23 @@ class using_risk_assessment():
         #         print("Stock id: " + str(stock_id_list[i]))
         #         print("agpd: " +str(agpd_list[i]))
     
+    def getting_latest_date(self,id,place=None):
+        a= risk_assessment(id,place)
+        # a= risk_assessment("300002","SZ")
+        risk_assessment.split_string(a)
+        # risk_assessment.removing_million_and_thousands(a)
+        risk_assessment.floating_list_of_volume_of_exchange_hand(a)
+        # risk_assessment.reverse(a)
+        risk_assessment.get_date(a)
+        return risk_assessment.date_return(a)
+
+    
 ## checking a particular stock for its agpd
 
 if __name__=='__main__': 
     a=using_risk_assessment()
-    using_risk_assessment.what_is_price_when_w_is_fallen_to_20(a)
+    using_risk_assessment.finding_one_agpd(a,"301039","SZ")
+    # using_risk_assessment.what_is_price_when_w_is_fallen_to_20(a)
 # a= risk_assessment("301039","SZ")
 # # a= risk_assessment("300002","SZ")
 # risk_assessment.split_string(a)
