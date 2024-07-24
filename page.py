@@ -41,7 +41,10 @@ def result():
             "last_updated":str(ra.getting_latest_date(a,ID,region))
         }
 
-        if request.form['btn'] == 'Fall_to_20': 
+        if request.form['btn'] == 'Searching_for_one': 
+            context["result"]=str(ra.finding_one_agpd(a,ID,region))
+            return render_template("result.html",len = len(context),context=context)
+        elif request.form['btn'] == 'Fall_to_20': 
             print("Here I am")
             # return "<p>" + str(ra.what_is_price_when_w_is_fallen_to_20(a,ID,region)) + "</p>"
 

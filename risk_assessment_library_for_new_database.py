@@ -1064,6 +1064,7 @@ class risk_assessment:
         list_of_reflection2=[]
         j_list=[]
         average_day_list=[]
+        superlonglist=""
 
         # list_of_reflection2 = self.list_of_reflection
         print(self.list_of_reflection)
@@ -1087,15 +1088,16 @@ class risk_assessment:
             for j in range(15):
                 if (i+j >= len(self.W_moderate_list_within_class)):
                     print("Gone")
+                    superlonglist+="Gone\n"
                     break
                 if (self.W_moderate_list_within_class[i+j] - self.W_moderate_list_within_class[i]>7.5 and (j)<=5):
-                    print("5 days result")
-                    print("Date taken: "+str(j))
-                    print("The previous days W_moderate")
+                    superlonglist+="5 days result\n"
+                    superlonglist+= "Date taken: "+str(j) + "\n"
+                    superlonglist+= "The previous days W_moderate"
                     for k in range(j):
-                        print(self.W_moderate_list_within_class[i+k])
-                    print("Ending point W_moderate: " +str(self.W_moderate_list_within_class[i+j]))
-                    print("Ending date: "+str(self.list_of_date[i+j+self.a]))
+                        superlonglist+= str(self.W_moderate_list_within_class[i+k])
+                    superlonglist+= "\nEnding point W_moderate: " +str(self.W_moderate_list_within_class[i+j]) + "\n"
+                    superlonglist+= "Ending date: "+str(self.list_of_date[i+j+self.a]) + "\n"
                     j_list.append(j)
                     if ( i - reference_point<=5):
                         reference_point = i 
@@ -1104,13 +1106,13 @@ class risk_assessment:
                     number_of_5_days+=1
                     break
                 elif (self.W_moderate_list_within_class[i+j] - self.W_moderate_list_within_class[i]>7.5 and (j)<=10):
-                    print("10 days result")
-                    print("Date taken: "+str(j))
-                    print("The previous days W_moderate")
+                    superlonglist += "10 days result\n"
+                    superlonglist+= "Date taken: "+str(j)+ "\n"
+                    prisuperlonglist += "The previous days W_moderate\n"
                     for k in range(j):
-                        print(self.W_moderate_list_within_class[i+k])
-                    print("Ending point W_moderate: " +str(self.W_moderate_list_within_class[i+j]))
-                    print("Ending date: "+str(self.list_of_date[i+j+self.a]))
+                        superlonglist+= str(self.W_moderate_list_within_class[i+k])
+                    superlonglist+= "\nEnding point W_moderate: " +str(self.W_moderate_list_within_class[i+j]) + "\n"
+                    superlonglist += "Ending date: "+str(self.list_of_date[i+j+self.a])+ "\n"
                     j_list.append(j)
                     if ( i - reference_point<=10):
                         reference_point = i 
@@ -1119,13 +1121,13 @@ class risk_assessment:
                     number_of_10_days+=1
                     break
                 elif ((self.W_moderate_list_within_class[i+j] - self.W_moderate_list_within_class[i]>7.5 and (j)<=15)):
-                    print("15 days result")
-                    print("Date taken: " +str(j))
-                    print("The previous days W_moderate")
+                    superlonglist +="15 days result\n"
+                    superlonglist += "Date taken: " +str(j) + "\n"
+                    superlonglist += "The previous days W_moderate"+ "\n" 
                     for k in range(j):
-                        print(self.W_moderate_list_within_class[i+k])
-                    print("Ending W_moderate"+str(self.W_moderate_list_within_class[i+j]))
-                    print("Ending date need" +str(self.list_of_date[i+j+self.a]))
+                        superlonglist+= str(self.W_moderate_list_within_class[i+k])
+                    superlonglist+= "Ending W_moderate"+str(self.W_moderate_list_within_class[i+j]) + "\n" 
+                    superlonglist+= "Ending date need" +str(self.list_of_date[i+j+self.a]) + "\n"
                     j_list.append(j)
                     if ( i - reference_point<=15):
                         reference_point = i 
@@ -1141,29 +1143,31 @@ class risk_assessment:
             
             average_day_list.append(self.calculate_elapsed_days(self.list_of_date[list_of_reflection2[i]+self.a],self.list_of_date[list_of_reflection2[i+1]+self.a]))
         
-        print(average_day_list)
+        superlonglist += f"The average day list: {average_day_list}\n"
 
         self.elasped_day_list=j_list
 
-        print("5 days")
-        print(list_of_5_days)
+        superlonglist+= "The analysis result: \n"
+        superlonglist+= ("5 days\n")
+        superlonglist+= str((list_of_5_days))
         for i in list_of_5_days:
-            print(self.list_of_date[i+self.a])
-        print(number_of_5_days)
-        print("10 days")
-        print(list_of_10_days)
+            superlonglist += (self.list_of_date[i+self.a])
+        superlonglist += f"The number of 5 days: {number_of_5_days}"
+        superlonglist += ("\n10 days")
+        superlonglist +=str(list_of_10_days)
         for i in list_of_10_days:
-            print(self.list_of_date[i+self.a])
-        print(number_of_10_days)
-        print("15 days")
-        print(list_of_15_days)
+            superlonglist += (self.list_of_date[i+self.a])
+        superlonglist += f"The number of 10 days: {number_of_10_days}"
+        superlonglist += ("\n15 days")
+        superlonglist +=str(list_of_15_days)
         for i in list_of_15_days:
-            print(self.list_of_date[i+self.a])
-        print(number_of_15_days)
-        print("On average:")
-        print("We need " +str(np.average(j_list))+" days to see a rebound")
-        print("Between each reflection, there is a " +str(np.average(average_day_list))+ " day gap between")
-        print(" and " +str(np.std(average_day_list)) +" as standard deviation")
+            superlonglist += (self.list_of_date[i+self.a])
+        superlonglist += f"The number of 15 days: {number_of_15_days}"
+        superlonglist += ("\nOn average:\n")
+        superlonglist+= ("We need " +str(np.average(j_list))+" days to see a rebound\n")
+        superlonglist+=("Between each reflection, there is a " +str(np.average(average_day_list))+ " day gap between\n")
+        superlonglist+=(" and " +str(np.std(average_day_list)) +" as standard deviation")
+        return superlonglist
 
     def price_return(self):
         return float(self.list_of_ending_price[-1])
@@ -1406,6 +1410,7 @@ class using_risk_assessment():
         pass
 
     def finding_one_agpd(self,id,place=None):
+        longstring = [] 
         a= risk_assessment(id,place)
         # a= risk_assessment("300002","SZ")
         risk_assessment.split_string(a)
@@ -1425,18 +1430,23 @@ class using_risk_assessment():
         W_moderate,W_sell,W_moderate_yesterday,W_sell_yesterday= risk_assessment.W_moderate_at_last_day(a,MFI_list,rsi_list,d_list)
         date = risk_assessment.date_return(a)
         print(date)
+        longstring = f"W_buy_at_that_point: {W_moderate} \n W_sell at that day: {W_sell}"  
         print("W_b" +str(W_moderate))
         print("W_sell" +str(W_sell))
         print("The other one")
+        longstring += "\n The other details. \n"
         # for _ in range(len(W_moderate_list)):
         #     print(W_moderate_list[_])
 
         # print("W_B yesterday" + str(W_moderate_yesterday))
         agpd,length_of_the_buying_date,average_day,day_std_deviation = risk_assessment.income(a)
-        risk_assessment.predicting_reflection(a)
+        longstring += f"The targetted ag value: {risk_assessment.ag} \n The targetted agpd value :{agpd}\n"
+        longstring += f"The targetted revenue per year: {risk_assessment.revenue_per_year}"
+        longstring += risk_assessment.predicting_reflection(a)
         Z_15_list, Z_5_list = risk_assessment.ema_for_price_for_the_last_five_days(a)
         counter=risk_assessment.days_has_been_below_17(a)
         risk_assessment.close(a)
+        return longstring
     
     def real_time_monitoring(self,id,place=None):
         a= risk_assessment(id,place)
@@ -2401,7 +2411,7 @@ class using_risk_assessment():
 
 if __name__=='__main__': 
     a=using_risk_assessment()
-    using_risk_assessment.finding_one_agpd(a,"301039","SZ")
+    using_risk_assessment.finding_one_agpd(a,"600600","SS")
     # using_risk_assessment.what_is_price_when_w_is_fallen_to_20(a)
 # a= risk_assessment("301039","SZ")
 # # a= risk_assessment("300002","SZ")
