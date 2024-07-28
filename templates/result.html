@@ -2,16 +2,18 @@
 
 {% block head %}
         <title>LDR is gay</title>
-        <link rel="stylesheet" type="text/css" href="/cssfile/result.css">
+        <link rel="stylesheet" type="text/css" href="/static/result.css">
         {% endblock head %}
 
 {% block body %}
 
 <h1> Here is the search_result for :</h1>
 
+<div class = "result" >
 {% for key, value in context.items() %}
-    <h1>{{key}} : {{context[key]}}</h1>
+    <h1 class="temp_result">{{key}} : {{context[key]}}</h1>
 {% endfor %}
+</div>
 
 <form method="post" action="http://localhost:5000">
 <button type="submit" name="btn" value="return">Return</button>
