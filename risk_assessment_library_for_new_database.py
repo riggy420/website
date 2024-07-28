@@ -621,7 +621,7 @@ class risk_assessment:
         # for i in self.actual_actual_purchase:
         #     print(self.list_of_ending_price[i])
 
-        return agpd,len(self.elasped_day),average_day,day_std_deviation
+        return ag,agpd,len(self.elasped_day),average_day,day_std_deviation,revenue_per_year
     def removing_stuff_from_the_list(self,buy_list,sell_list):
         buy_list = [float(x) for x in buy_list]
         sell_list = [float(x) for x in sell_list]
@@ -1108,7 +1108,7 @@ class risk_assessment:
                 elif (self.W_moderate_list_within_class[i+j] - self.W_moderate_list_within_class[i]>7.5 and (j)<=10):
                     superlonglist += "10 days result\n"
                     superlonglist+= "Date taken: "+str(j)+ "\n"
-                    prisuperlonglist += "The previous days W_moderate\n"
+                    superlonglist += "The previous days W_moderate\n"
                     for k in range(j):
                         superlonglist+= str(self.W_moderate_list_within_class[i+k])
                     superlonglist+= "\nEnding point W_moderate: " +str(self.W_moderate_list_within_class[i+j]) + "\n"
@@ -1149,17 +1149,17 @@ class risk_assessment:
 
         superlonglist+= "The analysis result: \n"
         superlonglist+= ("5 days\n")
-        superlonglist+= str((list_of_5_days))
+        # superlonglist+= str((list_of_5_days))
         for i in list_of_5_days:
             superlonglist += (self.list_of_date[i+self.a])
         superlonglist += f"The number of 5 days: {number_of_5_days}"
         superlonglist += ("\n10 days")
-        superlonglist +=str(list_of_10_days)
+        # superlonglist +=str(list_of_10_days)
         for i in list_of_10_days:
             superlonglist += (self.list_of_date[i+self.a])
         superlonglist += f"The number of 10 days: {number_of_10_days}"
         superlonglist += ("\n15 days")
-        superlonglist +=str(list_of_15_days)
+        # superlonglist +=str(list_of_15_days)
         for i in list_of_15_days:
             superlonglist += (self.list_of_date[i+self.a])
         superlonglist += f"The number of 15 days: {number_of_15_days}"
@@ -1410,7 +1410,7 @@ class using_risk_assessment():
         pass
 
     def finding_one_agpd(self,id,place=None):
-        longstring = [] 
+        # longstring = [] 
         a= risk_assessment(id,place)
         # a= risk_assessment("300002","SZ")
         risk_assessment.split_string(a)
@@ -1439,9 +1439,9 @@ class using_risk_assessment():
         #     print(W_moderate_list[_])
 
         # print("W_B yesterday" + str(W_moderate_yesterday))
-        agpd,length_of_the_buying_date,average_day,day_std_deviation = risk_assessment.income(a)
-        longstring += f"The targetted ag value: {risk_assessment.ag} \n The targetted agpd value :{agpd}\n"
-        longstring += f"The targetted revenue per year: {risk_assessment.revenue_per_year}"
+        ag,agpd,length_of_the_buying_date,average_day,day_std_deviation,revenue_per_year = risk_assessment.income(a)
+        longstring += f"\nThe targetted ag value: {ag} \n The targetted agpd value :{agpd}\n"
+        longstring += f"The targetted revenue per year: {revenue_per_year} "
         longstring += risk_assessment.predicting_reflection(a)
         Z_15_list, Z_5_list = risk_assessment.ema_for_price_for_the_last_five_days(a)
         counter=risk_assessment.days_has_been_below_17(a)
@@ -1914,7 +1914,7 @@ class using_risk_assessment():
                     five_day_average_of_W_buy_list.append(average_five_days_W_buy)
                     percentage_difference_in_W_moderate=(W_moderate-W_moderate_yesterday)/W_moderate_yesterday*100
                     percentage_difference_in_W_moderate_list.append(percentage_difference_in_W_moderate)
-                    agpd_1,day,average_day,day_std_deviation = risk_assessment.income(a)
+                    ag,agpd_1,day,average_day,day_std_deviation,revenue_per_year = risk_assessment.income(a)
                     average_day_list.append(average_day)
                     day_std_deviation_list.append(day_std_deviation)
                     number_of_trade_list.append(day)
@@ -2061,7 +2061,7 @@ class using_risk_assessment():
                         five_day_average_of_W_buy_list.append(average_five_days_W_buy)
                         percentage_difference_in_W_moderate=(W_moderate-W_moderate_yesterday)/W_moderate_yesterday*100
                         percentage_difference_in_W_moderate_list.append(percentage_difference_in_W_moderate)
-                        agpd_1,day,average_day,day_std_deviation = risk_assessment.income(a)
+                        ag,agpd_1,day,average_day,day_std_deviation,revenue_per_year = risk_assessment.income(a)
                         average_day_list.append(average_day)
                         day_std_deviation_list.append(day_std_deviation)
                         number_of_trade_list.append(day)
@@ -2216,7 +2216,7 @@ class using_risk_assessment():
                         W_sell_list.append(W_sell)
                         percentage_difference_in_W_moderate=(W_moderate-W_moderate_yesterday)/W_moderate_yesterday*100
                         percentage_difference_in_W_moderate_list.append(percentage_difference_in_W_moderate)
-                        agpd_1,day,average_day,day_std_deviation = risk_assessment.income(a)
+                        ag,agpd_1,day,average_day,day_std_deviation,revenue_per_year = risk_assessment.income(a)
                         day_std_deviation_list.append(day_std_deviation)
                         average_day_list.append(average_day)
                         number_of_trade_list.append(day)
@@ -2371,7 +2371,7 @@ class using_risk_assessment():
 
                         W_moderate_list.append(W_moderate)
                         W_sell_list.append(W_sell)
-                        agpd_1,day,average_day,day_std_deviation = risk_assessment.income(a)
+                        ag,agpd_1,day,average_day,day_std_deviation,revenue_per_year = risk_assessment.income(a)
                         number_of_trade_list.append(day)
                         date = risk_assessment.date_return(a)
                         date_list.append(date)

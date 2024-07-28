@@ -43,6 +43,13 @@ def result():
 
         if request.form['btn'] == 'Searching_for_one': 
             context["result"]=str(ra.finding_one_agpd(a,ID,region))
+            # counter = 0
+            # for chars in context["result"]:
+            #     if chars == "\n":
+            #         counter +=1
+            #     else:
+            #         context["result" + str(counter)]= chars
+
             return render_template("result.html",len = len(context),context=context)
         elif request.form['btn'] == 'Fall_to_20': 
             print("Here I am")

@@ -9,13 +9,9 @@
 
 <h1> Here is the search_result for :</h1>
 
-
 {% for key, value in context.items() %}
-    <h1>{{key}} : {{value}}</h1>
-
-
+    <h1>{{key}} : {{context[key]}}</h1>
 {% endfor %}
-
 
 <form method="post" action="http://localhost:5000">
 <button type="submit" name="btn" value="return">Return</button>
