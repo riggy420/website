@@ -182,7 +182,7 @@ class risk_assessment:
         self.number= number
         if area != "":
             self.area= area
-            stock_price_database = r"C:\Users\yiuki\Stockid_data\{}.{}.txt".format(self.number,self.area)
+            stock_price_database = r"/home/ricky/Documents/Stockid_data/{}.{}.txt".format(self.number,self.area)
         else:
             self.area= "america"
             stock_price_database = r"/home/ricky/Documents/Stockid_data/{}.txt".format(self.number)

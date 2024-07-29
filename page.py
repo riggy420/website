@@ -1,5 +1,8 @@
 from flask import Flask,render_template,request,flash,session,redirect
 import library
+import time 
+import os
+import psutil 
 
 from risk_assessment_library_for_new_database import using_risk_assessment as ra
 from risk_assessment_library_for_new_database import risk_assessment as database
@@ -16,73 +19,101 @@ app.secret_key="ldr"
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
+    current_pid = os.getpid()
+    process = [p for p in psutil.process_iter() if p.name().lower() in ['python', 'python3']]
+    print(process)
+    # print(p.pid for p in process)
+    print(current_pid)
+    print(len(process))
+    same_terminal = any(p.pid == current_pid for p in process)
+    
+    if len(process) >2:
+        flash("The script is running in the same terminal.")
+
     return render_template('index.html')
 
 @app.route('/result', methods=['POST', 'GET'])
 def result():
     if request.method == 'POST':
-        print("Passed")
-        result = request.form
-        region = request.form.get("region")
-    # getting input with name = lname in HTML form 
-        ID = request.form.get("ID")
         a = ra()
-        print("Next")
-        if ra.what_is_price_when_w_is_fallen_to_20(a,ID,region) == FileNotFoundError:
-            flash ("Either StockID or region is wrong")
-            return redirect(request.url)
 
-        # b = database(ID,region)
 
-        context = {
-            "function":"Fall_to_20",
-            "region":region,
-            "ID":ID,
-            "last_updated":str(ra.getting_latest_date(a,ID,region))
-        }
+        if request.form['btn'] == 'Update_America':    
+            if str(ra.getting_latest_date(a,'AAPL','')) != time.strftime("%Y-%m-%d"):
+                print("Updating America")
+                flash('Updating America. Please wait for a while')
 
-        if request.form['btn'] == 'Searching_for_one': 
-            context["result"]=str(ra.finding_one_agpd(a,ID,region))
-            # counter = 0
-            # for chars in context["result"]:
-            #     if chars == "\n":
-            #         counter +=1
-            #     else:
-            #         context["result" + str(counter)]= chars
-
-            return render_template("result.html",len = len(context),context=context)
-        elif request.form['btn'] == 'Fall_to_20': 
-            print("Here I am")
-            # return "<p>" + str(ra.what_is_price_when_w_is_fallen_to_20(a,ID,region)) + "</p>"
-
-            context["result"]=str(ra.what_is_price_when_w_is_fallen_to_20(a,ID,region))
-            return render_template("result.html",len = len(context),context=context)
-        elif request.form['btn'] == 'Rise_to_40':
-            print("Why")
-
-            context["result"],context['result2']=ra.what_is_price_when_w_sell_is_risen_to_40(a,ID,region)
-            return render_template("result.html",len = len(context),context=context)
-            ## Here is so fucked up => don;t know what happened now
-            ## only buggy part -> Keep on returning nonetype object instead of str
-
-        elif request.form['btn'] == 'Reflective_Price':
-            if request.form.get("Price") == '': ## If you input nothing -> It crashes 
-                flash("You didn't input price")
+                os.system("python3 ~/Documents/databasecreator.america.py")
                 return redirect(request.url)
             else:
-                price = request.form.get("Price")
+                flash('Already updated')
+                return redirect(request.url)
+        elif request.form['btn'] == 'Update_China':
+            if str(ra.getting_latest_date(a,'600600','SS')) != time.strftime("%Y-%m-%d"):
+                os.system("python3 ~/Documents/updating_for_china.py")
+                flash('Updating China. Please wait for a while')
+                return redirect(request.url)
+            else:
+                flash('Already updated')
+                return redirect(request.url)
+        else:
+            result = request.form
+            region = request.form.get("region")
+            # getting input with name = lname in HTML form 
+            ID = request.form.get("ID")
 
-                context["result"]=str(ra.reflective_price(a,ID,region,price))
+            context = {
+                "function":request.form['btn'],
+                "region":region,
+                "ID":ID,
+                "last_updated":str(ra.getting_latest_date(a,ID,region))
+            }
+
+            print("Passed")
+            print("Next")
+            if ra.what_is_price_when_w_is_fallen_to_20(a,ID,region) == FileNotFoundError:
+                flash ("Either StockID or region is wrong")
+                return redirect(request.url)
+
+            # b = database(ID,region)
+
+
+            if request.form['btn'] == 'Searching_for_one': 
+                context["result"]=str(ra.finding_one_agpd(a,ID,region))
                 return render_template("result.html",len = len(context),context=context)
-        elif request.form['btn'] == 'Price_when_ten_plus_current':
-            if request.form.get("W_sell_diff") == '':  ## If you input nothing -> It crashes 
-                flash("You must input W_sell_diff")
-                return redirect(request.url)
-            else:
-                W_sell_diff = request.form.get("W_sell_diff")
-                context["result"]=str(ra.what_is_price_when_w_sell_is_risen_to_10_plus_current(a,ID,region,W_sell_diff))
+            elif request.form['btn'] == 'Fall_to_20': 
+                print("Here I am")
+                # return "<p>" + str(ra.what_is_price_when_w_is_fallen_to_20(a,ID,region)) + "</p>"
 
-                return render_template("result.html",len = len(context),context=context)            
+                context["result"]=str(ra.what_is_price_when_w_is_fallen_to_20(a,ID,region))
+                return render_template("result.html",len = len(context),context=context)
+            elif request.form['btn'] == 'Rise_to_40':
+                print("Why")
+
+                context["result"],context['result2']=ra.what_is_price_when_w_sell_is_risen_to_40(a,ID,region)
+                return render_template("result.html",len = len(context),context=context)
+                ## Here is so fucked up => don;t know what happened now
+                ## only buggy part -> Keep on returning nonetype object instead of str
+
+            elif request.form['btn'] == 'Reflective_Price':
+                if request.form.get("Price") == '': ## If you input nothing -> It crashes 
+                    flash("You didn't input price")
+                    return redirect(request.url)
+                else:
+                    price = request.form.get("Price")
+
+                    context["result"]=str(ra.reflective_price(a,ID,region,price))
+                    return render_template("result.html",len = len(context),context=context)
+            elif request.form['btn'] == 'Price_when_ten_plus_current':
+                if request.form.get("W_sell_diff") == '':  ## If you input nothing -> It crashes 
+                    flash("You must input W_sell_diff")
+                    return redirect(request.url)
+                else:
+                    W_sell_diff = request.form.get("W_sell_diff")
+                    context["result"]=str(ra.what_is_price_when_w_sell_is_risen_to_10_plus_current(a,ID,region,W_sell_diff))
+
+                    return render_template("result.html",len = len(context),context=context) 
+
     
     return render_template("index.html")
 
