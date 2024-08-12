@@ -19,7 +19,7 @@
 <h2> Please input the region and StockID</h2>
 
 <h3> If the region selected is America, please leave the region as blank</h3>
-<form method="post" action="http://localhost:5000/result">
+<form method="post" action="{{ url_for('result') }}">
 <label for="Region">Region:</label>
 <input type="text" id="region" name="region" placeholder="region">
 <br>
@@ -44,10 +44,22 @@
 <button type="submit" name="btn" value="Rise_to_40">Rise_to_40</button>
 <button type="submit" name="btn" value="Reflective_Price">Given Price predict W_sell_diff</button>
 <button type="submit" name="btn" value="Price_when_ten_plus_current">Price_when_input_value_plus_current</button>
+<br/>
 <button type="submit" name="btn" value="Update_China">Update_China</button>
 <button type="submit" name="btn" value="Update_America">Update_America</button>
 <button type="submit" name="btn" value="General_Update_in_America">General_Update_in_America</button>
+<button type="submit" name="btn" value="General_Update_in_China">General_Update_in_China</button>
 </div>
+
+<select id="selectvalue">
+{% for n in industry %}
+        <option value="{{n}}">{{ n }}</option>
+{% endfor %}
+</select>  
+
+<button type="submit" name="btn" value="Submit">Submit</button>
+<br/>
+
 
 <p> Welcome </p>
 {% endblock body %}

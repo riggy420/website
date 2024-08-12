@@ -3,12 +3,16 @@ import library
 import time 
 import os
 import psutil 
+from datetime import datetime
+import pandas as pd 
+import random
 
 from risk_assessment_library_for_new_database import using_risk_assessment as ra
 from risk_assessment_library_for_new_database import risk_assessment as database
 
 app = Flask(__name__)   # Flask constructor 
-app.secret_key="ldr"
+# app.secret_key="rtdyitfrt"
+app.config['SECRET_KEY'] = 'rtddcfvghgbcvghvygfvgycvvfgffcg1fgyitfrt'
 # A decorator used to tell the application 
 # which URL is associated function 
 # @app.route('/')       
@@ -23,7 +27,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
 
 class User(db.Model):
     stockid = db.Column(db.String(64), primary_key=True)
@@ -58,29 +61,34 @@ class User(db.Model):
 
 def making_data(filename):
     print("Here")
-    with open(filename,'r') as f:
-        print("Here")
-        for line in f:
-            if (line[0:4] == "Stoc"):
-                continue
-            
-            stockid,agpd_value,current_price,number_of_trade,w_buy,w_sell,day_last_update,average_day,day_standard_deviation,W_moderate_diff,five_day_average = line.strip().split(' ')
-            user = User(
-                stockid=stockid, 
-                agpd_value=float(agpd_value), 
-                current_price=float(current_price), 
-                number_of_trade=int(number_of_trade), 
-                w_buy=float(w_buy), 
-                w_sell=float(w_sell), 
-                day_last_update=day_last_update, 
-                average_day=float(average_day), 
-                day_standard_deviation=float(day_standard_deviation), 
-                W_moderate_diff=float(W_moderate_diff), 
-                five_day_average=float(five_day_average)
-                )
-            
-            db.session.add(user)
-        db.session.commit()
+    try:
+        with open(filename,'r') as f:
+            print("Here")
+            for line in f:
+                if (line[0:4] == "Stoc"):
+                    continue
+                
+                stockid,agpd_value,current_price,number_of_trade,w_buy,w_sell,day_last_update,average_day,day_standard_deviation,W_moderate_diff,five_day_average = line.strip().split(' ')
+                user = User(
+                    stockid=stockid, 
+                    agpd_value=float(agpd_value), 
+                    current_price=float(current_price), 
+                    number_of_trade=int(number_of_trade), 
+                    w_buy=float(w_buy), 
+                    w_sell=float(w_sell), 
+                    day_last_update=day_last_update, 
+                    average_day=float(average_day), 
+                    day_standard_deviation=float(day_standard_deviation), 
+                    W_moderate_diff=float(W_moderate_diff), 
+                    five_day_average=float(five_day_average)
+                    )
+                
+                db.session.add(user)
+            db.session.commit()
+    except FileNotFoundError:
+        print("File not found")
+        flash("File not found")
+        return redirect(request.url)
 
 # with app.app_context():
 #     db.create_all()
@@ -138,6 +146,11 @@ def data():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
+    data = pd.ExcelFile("/home/ricky/Documents/china_stock_industry_catego/stock_industry_list.xlsx").parse()
+    industry=data['板块名称']
+    industry.loc[0]='None'
+
+
     current_pid = os.getpid()
     process = [p for p in psutil.process_iter() if p.name().lower() in ['python', 'python3']]
     print(process)
@@ -149,7 +162,7 @@ def index():
     if len(process) >2:
         flash("The script is running in the same terminal.")
 
-    return render_template('index.html')
+    return render_template('index.html',industry=industry)
 
 @app.route('/result', methods=['POST', 'GET'])
 def result():
@@ -178,11 +191,30 @@ def result():
         elif request.form['btn'] == 'General_Update_in_America':
             with app.app_context():
                 print("Struck")
+                current_datetime = datetime.now().strftime("%Y-%m-%d")
                 db.drop_all()
                 db.create_all()
-                making_data("/home/ricky/Documents/agpd_america_2024-01-26_all_0.001.txt")
+                making_data(f"/home/ricky/Documents/agpd_america_"+{}+ "_all_0.001.txt".format(current_datetime))
 
-            return render_template('table.html', title='Analysis Page')
+            return render_template('table.html', title='Analysis America')
+        elif request.form['btn'] == 'General_Update_in_China':
+            with app.app_context():
+                current_datetime = datetime.now().strftime("%Y-%m-%d")
+                db.drop_all()
+                db.create_all()
+                making_data(f"/home/ricky/Documents/agpd_china_"+{}+ "_all_0.001.txt".format(current_datetime))
+
+            return render_template('table.html', title='Analysis China')
+        elif request.form['btn'] == 'Submit':
+            n = request.form.get('n')
+            print (n)
+            if n == 'None':
+                flash("You must select industry")
+                return redirect(request.url)
+            else:
+                print(n)
+                return render_template('table.html', title='Analysis China')
+            
 
 
         else:
@@ -190,19 +222,18 @@ def result():
             region = request.form.get("region")
             # getting input with name = lname in HTML form 
             ID = request.form.get("ID")
-
             context = {
                 "function":request.form['btn'],
                 "region":region,
                 "ID":ID,
                 "last_updated":str(ra.getting_latest_date(a,ID,region))
             }
-
             print("Passed")
             print("Next")
             if ra.what_is_price_when_w_is_fallen_to_20(a,ID,region) == FileNotFoundError:
                 flash ("Either StockID or region is wrong")
                 return redirect(request.url)
+            
 
             # b = database(ID,region)
 
@@ -244,10 +275,11 @@ def result():
                     return render_template("result.html",len = len(context),context=context) 
 
     
-    return render_template("index.html")
+    return render_template("result.html")
 
 if __name__=='__main__': 
-    app.run(host='0.0.0.0' , port=5000,debug=True)
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
 
 # if __name__ == "__main__":
