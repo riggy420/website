@@ -40,6 +40,7 @@ class User(db.Model):
     day_standard_deviation = db.Column(db.Float)
     W_moderate_diff = db.Column(db.Float)
     five_day_average = db.Column(db.Float)
+    day_has_been = db.Column(db.Float)
 
 
     def to_dict(self):
@@ -54,7 +55,8 @@ class User(db.Model):
             'average_day': self.average_day,
             'day_standard_deviation': self.day_standard_deviation,
             'W_moderate_diff': self.W_moderate_diff,
-            'five_day_average': self.five_day_average
+            'five_day_average': self.five_day_average,
+            'day_has_been': self.day_has_been
         }
 
 
@@ -68,7 +70,7 @@ def making_data(filename):
                 if (line[0:4] == "Stoc"):
                     continue
                 
-                stockid,agpd_value,current_price,number_of_trade,w_buy,w_sell,day_last_update,average_day,day_standard_deviation,W_moderate_diff,five_day_average = line.strip().split(' ')
+                stockid,agpd_value,current_price,number_of_trade,w_buy,w_sell,day_last_update,average_day,day_standard_deviation,W_moderate_diff,five_day_average,day_has_been = line.strip().split(' ')
                 user = User(
                     stockid=stockid, 
                     agpd_value=float(agpd_value), 
@@ -80,7 +82,8 @@ def making_data(filename):
                     average_day=float(average_day), 
                     day_standard_deviation=float(day_standard_deviation), 
                     W_moderate_diff=float(W_moderate_diff), 
-                    five_day_average=float(five_day_average)
+                    five_day_average=float(five_day_average),
+                    day_has_been=int(day_has_been),
                     )
                 
                 db.session.add(user)
@@ -194,7 +197,7 @@ def result():
                 current_datetime = datetime.now().strftime("%Y-%m-%d")
                 db.drop_all()
                 db.create_all()
-                making_data(f"/home/ricky/Documents/agpd_america_"+{}+ "_all_0.001.txt".format(current_datetime))
+                making_data("/home/ricky/Documents/agpd_america_{}_all_0.001.txt".format(current_datetime))
 
             return render_template('table.html', title='Analysis America')
         elif request.form['btn'] == 'General_Update_in_China':
@@ -202,18 +205,29 @@ def result():
                 current_datetime = datetime.now().strftime("%Y-%m-%d")
                 db.drop_all()
                 db.create_all()
-                making_data(f"/home/ricky/Documents/agpd_china_"+{}+ "_all_0.001.txt".format(current_datetime))
+                making_data("/home/ricky/Documents/agpd_china_{}_all_0.001.txt".format(current_datetime))
 
             return render_template('table.html', title='Analysis China')
         elif request.form['btn'] == 'Submit':
-            n = request.form.get('n')
-            print (n)
-            if n == 'None':
+            industry = request.form.get('industry')
+            print (industry)
+            if industry == 'None':
                 flash("You must select industry")
                 return redirect(request.url)
             else:
-                print(n)
-                return render_template('table.html', title='Analysis China')
+                print(industry)
+                with app.app_context():
+                    current_datetime = datetime.now().strftime("%Y-%m-%d")
+                    db.drop_all()
+                    db.create_all()
+                    filename = "/home/ricky/Documents/site/agpd_china_{}_for_{}_all_0.001.txt".format(current_datetime,industry)
+                    try:
+                        making_data(filename)
+                    except FileNotFoundError:
+                        ra.checking_everything_at_night_for_agpd_for_spectific_industry(industry)
+                        making_data(filename)
+
+                return render_template('table.html', title='Analysis China for {}'.format(industry))
             
 
 
