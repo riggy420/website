@@ -15,7 +15,7 @@
 {% endfor %}
 </div>
 
-<form method="post" action="http://localhost:5000">
+<form method="post" action="{{ url_for('index') }}">
 <button type="submit" name="btn" value="return">Return</button>
 </form>
 <!-- 

@@ -1894,6 +1894,7 @@ class using_risk_assessment():
         percentage_difference_in_W_moderate_list=[]
         five_day_average_of_W_buy_list=[]
         ending_price_list = []
+        days_have_been = [] 
 
         for i in list_for_america:
             try:
@@ -1901,7 +1902,7 @@ class using_risk_assessment():
                 # i = str(i).zfill(6)
                 # # i =str(i)
                 print(i)
-                if (i=="NCPL" or i == "NUKK" or i == "XBIOW" or i == "WTER"):
+                if (i=="NCPL" or i == "NUKK" or i == "XBIOW" or i == "WTER" or i=="SHPW"):
                     continue
                 # print(list)
                 # instance = risk_assessment()
@@ -1959,6 +1960,8 @@ class using_risk_assessment():
                     date_list.append(date)
                     # print(agpd_1)
                     agpd_list.append(agpd_1)
+                    counter = risk_assessment.days_has_been_below_17(a)
+                    days_have_been.append(counter)
                     stock_id_list.append(i)
                     ending_price = risk_assessment.price_return(a)
                     ending_price_list.append(ending_price)
@@ -1992,7 +1995,7 @@ class using_risk_assessment():
                 if (agpd_list[i] > 0.001 and number_of_trade_list[i]>=4 and agpd_list[i]!=1 and float(ending_price_list[i])>=2 and W_moderate_list[i]>0):
                     # index = agpd_list.index(i)
                     # with open(filename,'a+') as f:
-                    f.write(str(stock_id_list[i]) + " " + str(agpd_list[i])+" " +str(ending_price_list[i]) + " "+ str(number_of_trade_list[i])+ " "+str(W_moderate_list[i]) + " " + str(W_sell_list[i])+ " "+str(date_list[i]) + " "+str(average_day_list[i])+ " "+str(day_std_deviation_list[i])+" "+ str(percentage_difference_in_W_moderate_list[i])+" "+str(five_day_average_of_W_buy_list[i])+"\n") 
+                    f.write(str(stock_id_list[i]) + " " + str(agpd_list[i]) +" "+str(ending_price_list[i]) + " "+ str(number_of_trade_list[i])+ " "+str(W_moderate_list[i]) + " " + str(W_sell_list[i])+ " "+str(date_list[i]) + " "+str(average_day_list[i])+ " "+str(day_std_deviation_list[i])+" "+ str(percentage_difference_in_W_moderate_list[i])+" "+str(five_day_average_of_W_buy_list[i])+" "+str(days_have_been[i])+"\n") 
                     print("Stock id: " + str(stock_id_list[i]))
                     print("agpd: " +str(agpd_list[i]))
 
@@ -2287,7 +2290,7 @@ class using_risk_assessment():
                 if (agpd_list[i] > 0.001 and number_of_trade_list[i]>=4 and agpd_list[i]!=1):
                     # index = agpd_list.index(i)
                     # with open(filename,'a+') as f:
-                    f.write(str(stock_id_list[i]) + " " + str(agpd_list[i]) +" "+ str(end) +" "+ str(number_of_trade_list[i])+ " "+str(W_moderate_list[i]) + " " + str(W_sell_list[i])+ " "+str(date_list[i]) + " "+str(average_day_list[i])+ " "+str(day_std_deviation_list[i])+" "+ str(percentage_difference_in_W_moderate_list[i])+" "+str(five_day_average_of_W_buy_list[i])+" "+str(days_have_been[i])+"\n") 
+                    f.write(str(stock_id_list[i]) + " " + str(agpd_list[i]) +" "+ str(ending_price_list[i]) +" "+ str(number_of_trade_list[i])+ " "+str(W_moderate_list[i]) + " " + str(W_sell_list[i])+ " "+str(date_list[i]) + " "+str(average_day_list[i])+ " "+str(day_std_deviation_list[i])+" "+ str(percentage_difference_in_W_moderate_list[i])+" "+str(five_day_average_of_W_buy_list[i])+" "+str(days_have_been[i])+"\n") 
                     print("Stock id: " + str(stock_id_list[i]))
                     print("agpd: " +str(agpd_list[i]))
     def checking_everything_at_night_for_agpd_for_CHINA(self):
@@ -2448,6 +2451,132 @@ class using_risk_assessment():
         risk_assessment.get_date(a)
         return risk_assessment.date_return(a)
 
+    def checking_everything_at_night_for_agpd_for_all_industry(self):
+        stock_list_for_indstry = "/home/ricky/Documents/china_stock_industry_catego/stock_industry_list.xlsx"
+        filename = "agpd_china_all_industry" + str(current_datetime)+"_all_0.001.txt"
+        data = pd.ExcelFile(stock_list_for_indstry).parse()
+        list_for_industry = []
+        # print(data)
+        # print(type(data))
+        for index in data.index:
+            list_for_industry.append(data['板块名称'][index])
+
+        print(list_for_industry)
+
+
+        list1 = ['industry']
+        agpd_list = []
+        # date = "2019-01-21"
+        agpd_1  = 0
+        stock_id_list = []
+        number_of_trade_list = []
+        W_moderate_list=[]
+        W_sell_list=[]
+        date_list = []
+        average_day_list=[]
+        day_std_deviation_list=[]
+        W_sell_yesterday_list=[]
+        W_moderate_yesterday_list=[]
+        percentage_difference_in_W_moderate_list=[]
+        five_day_average_of_W_buy_list=[]
+        days_have_been=[]
+        ending_price_list = []
+
+
+        for list in list1:                
+            for i in list_for_industry:
+                try:
+                    # i =str(i)
+                    # if i != industry:
+                    #     i = str(i).zfill(6)
+                    print(i)
+                    # print(list)
+                    # instance = risk_assessment()
+                    # instance.close()
+                    # a=a+str(i)
+                    a= risk_assessment(i,list)
+
+                except IndexError: 
+                    print("Index Error")
+                    pass
+                except FileNotFoundError:
+                    print("File Not found error")
+                    pass
+
+                except ZeroDivisionError:
+                    print("Zero ")
+
+                else:
+                    # print("Hello world")
+                    if list == "industry":
+                        digit = risk_assessment.split_string_for_industry(a)
+                    else:
+                        digit = risk_assessment.split_string(a)
+                    # risk_assessment.removing_million_and_thousands(a)
+                    # print(list_of_ending_price)
+                    if digit ==10:
+                        agpd_1 =-100
+                        print(agpd_1)
+                        agpd_list.append(agpd_1)
+                    else:
+                        # risk_assessment.reverse(a)
+                        if list != "industry":
+                            risk_assessment.floating_list_of_volume_of_exchange_hand(a)
+
+                        risk_assessment.get_date(a)
+                        # risk_assessment.rate_of_range(a)
+                        risk_assessment.RSV(a)
+                        rsi_list =risk_assessment.ema(a)
+                        risk_assessment.K(a)
+                        d_list=risk_assessment.D(a)
+                        MFI_list=risk_assessment.MFI_list1(a)
+                        W_moderate123_list,W_sell123_list=risk_assessment.W_moderate(a)
+                        five_days_of_W_buy=np.array(W_moderate123_list[-6:-1])
+                        average_five_days_W_buy=np.mean(five_days_of_W_buy)
+                        five_day_average_of_W_buy_list.append(average_five_days_W_buy)
+                        # risk_assessment.W_moderate(a)
+                        W_moderate,W_sell,W_moderate_yesterday,W_sell_yesterday= risk_assessment.W_moderate_at_last_day(a,MFI_list,rsi_list,d_list)
+                        W_moderate_list.append(W_moderate)
+                        W_moderate_yesterday_list.append(W_moderate_yesterday)
+                        W_sell_yesterday_list.append(W_sell_yesterday)
+                        W_sell_list.append(W_sell)
+                        percentage_difference_in_W_moderate=(W_moderate-W_moderate_yesterday)/W_moderate_yesterday*100
+                        percentage_difference_in_W_moderate_list.append(percentage_difference_in_W_moderate)
+                        ag,agpd_1,day,average_day,day_std_deviation,revenue_per_year = risk_assessment.income(a)
+                        day_std_deviation_list.append(day_std_deviation)
+                        average_day_list.append(average_day)
+                        number_of_trade_list.append(day)
+                        date = risk_assessment.date_return(a)
+                        date_list.append(date)
+                        # print(agpd_1)
+                        agpd_list.append(agpd_1)
+                        stock_id_list.append(i)
+                        counter = risk_assessment.days_has_been_below_17(a)
+                        days_have_been.append(counter)
+                        ending_price = risk_assessment.price_return(a)
+                        ending_price_list.append(ending_price)
+                        risk_assessment.close(a)
+
+                # except:
+                #     print("pass")
+
+        # print(agpd_list)
+        with open(filename,'a+') as f:
+            # f.write("Stock_ID" + " " + "AGPD_value" + " "+ "Number_of_Trade"+ " "+"W_moderate_value_now" + " " + "W_sell_value"+ " "+"day_last_update" + " "+"Average_day"+ " " + "Day_standard_deviation " +"W_moderate_%_diff"+" "+"five_day_average_of_W_buy"+"\n") 
+
+            for i in range(len(agpd_list)-1):
+                print(len(agpd_list))
+                print(len(number_of_trade_list))
+
+                # with open(filename,'a+') as f:
+                # if (agpd_list[i] != 1):
+                    # index = agpd_list.index(i)
+                    # with open(filename,'a+') as f:
+                f.write(str(stock_id_list[i]) + " " + str(agpd_list[i]) +" "+str(ending_price_list[i])+ " "+ str(number_of_trade_list[i])+ " "+str(W_moderate_list[i]) + " " + str(W_sell_list[i])+ " "+str(date_list[i]) + " "+str(average_day_list[i])+ " "+str(day_std_deviation_list[i])+" "+ str(percentage_difference_in_W_moderate_list[i])+" "+str(five_day_average_of_W_buy_list[i])+" "+str(days_have_been[i])+"\n") 
+                print("Stock id: " + str(stock_id_list[i]))
+                print("agpd: " +str(agpd_list[i]))
+
+
     def checking_everything_at_night_for_agpd_for_spectific_industry(sel,industry):
         # industry = input("Enter the industry")
         print(industry)
@@ -2583,7 +2712,8 @@ if __name__=='__main__':
 
     a=using_risk_assessment()
     # a.finding_one_agpd("中药","industry")
-    a.checking_everything_at_night_for_agpd_for_spectific_industry("中药")
+    # a.checking_everything_at_night_for_agpd_for_spectific_industry("中药")
+    a.checking_everything_at_night_for_agpd_for_all_industry()
     # using_risk_assessment.what_is_price_when_w_is_fallen_to_20(a)
 # a= risk_assessment("301039","SZ")
 # # a= risk_assessment("300002","SZ")

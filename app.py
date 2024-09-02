@@ -6,13 +6,16 @@ import psutil
 from datetime import datetime
 import pandas as pd 
 import random
+import subprocess 
+from subprocess import Popen
 
 from risk_assessment_library_for_new_database import using_risk_assessment as ra
 from risk_assessment_library_for_new_database import risk_assessment as database
 
 app = Flask(__name__)   # Flask constructor 
-# app.secret_key="rtdyitfrt"
-app.config['SECRET_KEY'] = 'rtddcfvghgbcvghvygfvgycvvfgffcg1fgyitfrt'
+app.secret_key="rtdyitfrt"
+app.config['SECRET_KEY'] = 'rtddcfvghgbcycfyttftyivghvygfvgycvvfgffcg1fgyitfrt'
+app.config['SESSION_TYPE'] = 'filesystem'
 # A decorator used to tell the application 
 # which URL is associated function 
 # @app.route('/')       
@@ -28,6 +31,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+### the database code (settuping for the database)
 class User(db.Model):
     stockid = db.Column(db.String(64), primary_key=True)
     agpd_value = db.Column(db.Float, index=True)
@@ -60,16 +64,21 @@ class User(db.Model):
         }
 
 
-
+## the function for making data
 def making_data(filename):
     print("Here")
-    try:
-        with open(filename,'r') as f:
-            print("Here")
-            for line in f:
-                if (line[0:4] == "Stoc"):
-                    continue
-                
+    # try:
+    
+    with open(filename,'r') as f:
+        print("Here")
+        for line in f:
+            if (line[0:4] == "Stoc"):
+                continue
+
+            # existing_record = db.session.query(User).filter_by(stockid=stockid).first()
+            # if existing_record:
+            #     pass
+            if db.session.query(User).filter_by(stockid='stockid').count() < 1:
                 stockid,agpd_value,current_price,number_of_trade,w_buy,w_sell,day_last_update,average_day,day_standard_deviation,W_moderate_diff,five_day_average,day_has_been = line.strip().split(' ')
                 user = User(
                     stockid=stockid, 
@@ -85,13 +94,13 @@ def making_data(filename):
                     five_day_average=float(five_day_average),
                     day_has_been=int(day_has_been),
                     )
-                
+            
                 db.session.add(user)
-            db.session.commit()
-    except FileNotFoundError:
-        print("File not found")
-        flash("File not found")
-        return redirect(request.url)
+        db.session.commit()
+    # except FileNotFoundError:
+    #     print("File not found")
+        # flash("File not found")
+        # return FileNotFoundError
 
 # with app.app_context():
 #     db.create_all()
@@ -100,7 +109,7 @@ def making_data(filename):
 # def index():
 #     return render_template('table.html', title='Analysis Page')
 
-
+## Showcasing the table query table at home page
 @app.route('/api/data')
 def data():
     query = User.query
@@ -146,7 +155,7 @@ def data():
         'draw': request.args.get('draw', type=int),
     }
 
-
+## front page
 @app.route('/', methods=['POST', 'GET'])
 def index():
     data = pd.ExcelFile("/home/ricky/Documents/china_stock_industry_catego/stock_industry_list.xlsx").parse()
@@ -167,8 +176,11 @@ def index():
 
     return render_template('index.html',industry=industry)
 
+## researching for a specific stock(magic behind the thing)
 @app.route('/result', methods=['POST', 'GET'])
 def result():
+    commands = [] 
+
     if request.method == 'POST':
         a = ra()
 
@@ -176,28 +188,37 @@ def result():
         if request.form['btn'] == 'Update_America':    
             if str(ra.getting_latest_date(a,'AAPL','')) != time.strftime("%Y-%m-%d"):
                 print("Updating America")
-                flash('Updating America. Please wait for a while')
+                # flash('Updating America. Please wait for a while')
 
-                os.system("python3 ~/Documents/databasecreator.america.py")
-                return redirect(request.url)
+                commands.append(["python3", os.path.expanduser("~/Documents/databasecreator.america.py")])
+                print("Here")   
+                print(commands)
+                # return redirect(request.url)
             else:
                 flash('Already updated')
-                return redirect(request.url)
+                # return redirect(request.url)
         elif request.form['btn'] == 'Update_China':
             if str(ra.getting_latest_date(a,'600600','SS')) != time.strftime("%Y-%m-%d"):
-                os.system("python3 ~/Documents/updating_for_china.py")
-                flash('Updating China. Please wait for a while')
-                return redirect(request.url)
+                commands.append(["python3", os.path.expanduser("~/Documents/updating_for_china.py")])
+                # flash('Updating China. Please wait for a while')
+                # return redirect(request.url)
             else:
                 flash('Already updated')
-                return redirect(request.url)
+                # return redirect(request.url)
         elif request.form['btn'] == 'General_Update_in_America':
             with app.app_context():
                 print("Struck")
                 current_datetime = datetime.now().strftime("%Y-%m-%d")
                 db.drop_all()
                 db.create_all()
-                making_data("/home/ricky/Documents/agpd_america_{}_all_0.001.txt".format(current_datetime))
+                try:
+                    making_data("/home/ricky/Documents/site/agpd_america_{}_all_0.001.txt".format(current_datetime))
+                except FileNotFoundError:
+                    print("Struck")
+                    subprocess.run(["python3", os.path.expanduser("~/Documents/checking_for_america.py")])
+                    # subprocess.wait()
+                    making_data("/home/ricky/Documents/site/agpd_america_{}_all_0.001.txt".format(current_datetime))
+                    return render_template('table.html', title='Analysis China')
 
             return render_template('table.html', title='Analysis America')
         elif request.form['btn'] == 'General_Update_in_China':
@@ -205,9 +226,16 @@ def result():
                 current_datetime = datetime.now().strftime("%Y-%m-%d")
                 db.drop_all()
                 db.create_all()
-                making_data("/home/ricky/Documents/agpd_china_{}_all_0.001.txt".format(current_datetime))
+                try:
+                    making_data("/home/ricky/Documents/site/agpd_china_{}_all_0.001.txt".format(current_datetime))
+                except FileNotFoundError:
+                    print("Struck")
+                    subprocess.run(["python3", os.path.expanduser("~/Documents/checking_for_china.py")])
+                    # subprocess.wait()
+                    making_data("/home/ricky/Documents/site/agpd_china_{}_all_0.001.txt".format(current_datetime))
+                    return render_template('table.html', title='Analysis China')
 
-            return render_template('table.html', title='Analysis China')
+
         elif request.form['btn'] == 'Submit':
             industry = request.form.get('industry')
             print (industry)
@@ -224,12 +252,42 @@ def result():
                     try:
                         making_data(filename)
                     except FileNotFoundError:
-                        ra.checking_everything_at_night_for_agpd_for_spectific_industry(industry)
+                        a.checking_everything_at_night_for_agpd_for_spectific_industry(industry)
                         making_data(filename)
 
                 return render_template('table.html', title='Analysis China for {}'.format(industry))
-            
+        elif request.form['btn'] == 'Update':
+            industry = request.form.get('industry')
+            print(industry)
+            if industry == 'None':
+                flash("You must select industry")
+                return redirect(request.url)
+            else:
+                import sys
+                sys.path.append('/home/ricky/Documents/china_stock_industry_catego/')  # Adjust the path as needed
+                from scrapper_using_akshare import updating as scrapper
+                a = scrapper()
+                a.updating_spectific_concept(industry)
+        elif request.form['btn'] == 'Overview': ## incomplete thinking of adding another function to the database itself 
+            with app.app_context():
+                current_datetime = datetime.now().strftime("%Y-%m-%d")
+                db.drop_all()
+                db.create_all()
+                filename =  "agpd_china_all_industry" + str(current_datetime)+"_all_0.001.txt"
+                try:
+                    making_data(filename)
+                except FileNotFoundError:
+                    a.checking_everything_at_night_for_agpd_for_all_industry()
+                    making_data(filename)
+                
+            return render_template('table.html', title='Analysis all industry')
 
+        elif request.form['btn'] == 'Update_all':
+                import sys
+                sys.path.append('/home/ricky/Documents/china_stock_industry_catego/')  # Adjust the path as needed
+                from scrapper_using_akshare import updating as scrapper
+                a = scrapper()
+                a.updating_all_concept()
 
         else:
             result = request.form
@@ -287,9 +345,14 @@ def result():
                     context["result"]=str(ra.what_is_price_when_w_sell_is_risen_to_10_plus_current(a,ID,region,W_sell_diff))
 
                     return render_template("result.html",len = len(context),context=context) 
+        
+        print("We are here")
+        for command in commands:
+            subprocess.Popen(command)
+            print(command)
+        print(commands)
 
-    
-    return render_template("result.html")
+    return render_template("index.html")
 
 if __name__=='__main__': 
     app.config['SESSION_TYPE'] = 'filesystem'
